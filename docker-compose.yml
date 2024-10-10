@@ -1,0 +1,38 @@
+version: "3.8"
+services:
+  app:
+    build:
+      args:
+        user: dmatseku
+        uid: 1000
+      context: ./
+      dockerfile: Docker/Dockerfile
+    image: panda-test
+    container_name: panda-test-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "80:80"
+    networks:
+      - panda-test
+  db:
+    image: mariadb:latest
+    container_name: panda-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - panda-test
+
+networks:
+  panda-test:
+    driver: bridge
